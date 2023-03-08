@@ -1,0 +1,27 @@
+{
+  "name": "rbdb-chain",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Rootstock Billion Dollar Block on-chain component",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bguiz/rootstock-rbdb.git"
+  },
+  "author": "bguiz",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/bguiz/rootstock-rbdb/issues"
+  },
+  "homepage": "https://github.com/bguiz/rootstock-rbdb#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "2.0.2",
+    "@openzeppelin/contracts": "4.8.2",
+    "@types/fs-extra": "11.0.1",
+    "fs-extra": "11.1.0",
+    "hardhat": "2.13.0"
+  }
+}
