@@ -53,4 +53,41 @@ contract MultiSend
             );
         }
     }
+
+    function multiSendNativeCoinPush(
+        uint256 amount,
+        address payable[] calldata recipients
+    )
+        public
+        payable
+        onlyOwner
+    {
+        require(
+            amount > 0,
+            "Zero amount"
+        );
+        uint256 numRecipients = recipients.length;
+        require(
+            (numRecipients > 1) &&
+                (numRecipients <= MAX_COUNT),
+            "Invalid number of recipients"
+        );
+        // NOTE fail-fast approach - we can know upfront
+        // if the loop will throw part-way through
+        require(
+            msg.value > (numRecipients * amount),
+            "Insufficient ERC20 allowance"
+        );
+        for (uint256 idx = 0; idx < numRecipients; idx++) {
+            (bool didSend, /* bytes memory data */) =
+                recipients[idx].call{value: amount}("");
+            require(
+                didSend,
+                "Native coin transfer failed"
+            );
+        }
+    }
+
+    // TODO multiSendFungibleTokenPull
+    // TODO multiSendNativeCoinPull
 }
