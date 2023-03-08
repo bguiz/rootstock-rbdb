@@ -3,3 +3,4 @@ node_modules
 /.rsk-seed-phrase
 /.rsk-testnet-block-rpc-response.json
 /cache
+/artifacts
