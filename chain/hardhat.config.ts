@@ -73,8 +73,9 @@ const hardhatConfig: HardhatUserConfig = {
       accounts,
     },
     rskregtest: {
+      chainId: 33,
       url: 'http://localhost:4444',
-      accounts,
+      accounts: 'remote',
     },
     rsktestnet: {
       chainId: 31,
