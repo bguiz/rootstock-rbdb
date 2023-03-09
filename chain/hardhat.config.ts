@@ -1,3 +1,4 @@
+import '@nomiclabs/hardhat-ethers'; // populates the `hre.ethers` object
 import { HardhatUserConfig } from 'hardhat/config';
 import { HardhatNetworkAccountsUserConfig } from 'hardhat/src/types/config';
 import * as fs from 'fs';
@@ -101,7 +102,7 @@ npx hardhat console --network rsktestnet
 (await require('hardhat').network.provider.send('eth_getBlockByNumber', ['latest', false])).number
 
 // the default EOA that will be used in deployment transactions
-(await require('hardhat').ethers.getSigners())[0].address
+(await hre.ethers.getSigners())[0].address
 
 .exit
 */
