@@ -4,3 +4,4 @@ node_modules
 /.rsk-testnet-block-rpc-response.json
 /cache
 /artifacts
+/typechain-types

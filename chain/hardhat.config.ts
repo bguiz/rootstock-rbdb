@@ -49,7 +49,7 @@ if (
     'unable to retrieve network gas price from .rsk-testnet-block-rpc-response.json',
   );
 }
-console.log("Minimum gas price for RSK Testnet: " + rskTestnetMinimumGasPrice);
+// console.log("Minimum gas price for RSK Testnet: " + rskTestnetMinimumGasPrice);
 
 const rskTestnetGasMultiplier: number = 1.1;
 
