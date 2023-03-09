@@ -14,4 +14,10 @@ describe('MultiSend', () => {
         multiSend = await multiSendFactory.deploy([]);
         await multiSend.deployTransaction.wait();
     });
+
+    it('should access MAX_COUNT', async () => {
+        const [maxCount] = await multiSend.functions.MAX_COUNT();
+        console.log(maxCount);
+        expect(maxCount).to.equal(64);
+    });
 });
