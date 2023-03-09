@@ -1,16 +1,17 @@
-import { ethers, waffle } from 'hardhat';
+import hre from 'hardhat';
 import { expect } from 'chai';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-import multiSendBuildArtefact from '../artifacts/contracts/MultiSend.sol/MultiSend.json';
-
 describe('MultiSend', () => {
     let deployer: SignerWithAddress;
+    let multiSendFactory: any;
     let multiSend: any; // TODO get types from typechain
 
     before(async () => {
-        [deployer] = await ethers.getSigners();
-        multiSend = await waffle.deployContract(deployer, multiSendBuildArtefact, []);
-        await multiSend.deployed();
+        console.log('running before');
+        [deployer] = await hre.ethers.getSigners();
+        multiSendFactory = await hre.ethers.getContractFactory("MultiSend");
+        multiSend = await multiSendFactory.deploy([]);
+        await multiSend.deployTransaction.wait();
     });
 });
