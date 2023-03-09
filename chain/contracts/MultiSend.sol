@@ -17,7 +17,7 @@ contract MultiSend
      * @dev The maximum number of recipients that may receive a transfer
      * within a single function invocation.
      */
-    uint256 constant MAX_COUNT = 64;
+    uint256 public constant MAX_COUNT = 64;
 
     constructor()
         Ownable()
