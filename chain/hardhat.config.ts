@@ -1,4 +1,5 @@
 import '@nomiclabs/hardhat-ethers'; // populates the `hre.ethers` object
+import '@nomiclabs/hardhat-waffle'; // populates the `hre.waffle` object
 import { HardhatUserConfig } from 'hardhat/config';
 import { HardhatNetworkAccountsUserConfig } from 'hardhat/src/types/config';
 import * as fs from 'fs';
