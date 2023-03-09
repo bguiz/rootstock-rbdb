@@ -9,11 +9,15 @@ import { BigNumber, ContractTransaction } from 'ethers';
 
 describe('MultiSend', () => {
     let deployer: SignerWithAddress;
+    let acc1: SignerWithAddress;
+    let acc2: SignerWithAddress;
+    let acc3: SignerWithAddress;
+    let acc4: SignerWithAddress;
     let multiSendFactory: MultiSend__factory;
     let multiSend: MultiSend;
 
     before(async () => {
-        [deployer] = await hre.ethers.getSigners();
+        [deployer, acc1, acc2, acc3, acc4] = await hre.ethers.getSigners();
         multiSendFactory = await hre.ethers.getContractFactory("MultiSend");
         multiSend = await multiSendFactory.deploy();
         await multiSend.deployTransaction.wait();
@@ -63,6 +67,107 @@ describe('MultiSend', () => {
                 recipients,
             );
             await expect(invocation).to.be.revertedWith('Invalid number of recipients');
+        });
+
+        describe('with IERC20', () => {
+            let rbdbFactory: RbdbFungibleToken__factory;
+            let rbdb: RbdbFungibleToken;
+            let deployerInitialBalance: bigint;
+            let recipients: string[];
+
+            before(async () => {
+                recipients = [
+                    acc1.address,
+                    acc2.address,
+                    acc3.address,
+                    acc4.address,
+                ];
+                rbdbFactory = await hre.ethers.getContractFactory("RbdbFungibleToken");
+                rbdb = await rbdbFactory.deploy();
+                deployerInitialBalance = 1000_000_000n * 1_000_000_000_000_000_000n;
+                await rbdb.deployTransaction.wait();
+            });
+
+            it('should check deployer allowance before approval', async () => {
+                let deployerAllowance: BigNumber;
+                [deployerAllowance] =
+                    await rbdb.functions.allowance(deployer.address, multiSend.address);
+                expect(deployerAllowance).to.equal(0);
+            });
+
+            it('should fail when an attempting to transfer before approval', async () => {
+                const invocation = multiSend.multiSendFungibleTokenPush(
+                    rbdb.address,
+                    100,
+                    recipients,
+                );
+                await expect(invocation).to.be.revertedWith('Insufficient ERC20 allowance');
+            });
+
+            it('should approve rbdb balance of deployer by multisend', async () => {
+                // it is approved to spend *all* of the tokens
+                await rbdb.functions.approve(
+                    multiSend.address,
+                    BigNumber.from(deployerInitialBalance),
+                );
+            });
+
+            it('should check deployer allowance after approval', async () => {
+                let deployerAllowance: BigNumber;
+                [deployerAllowance] =
+                    await rbdb.functions.allowance(deployer.address, multiSend.address);
+                expect(deployerAllowance).to.equal(deployerInitialBalance);
+            });
+
+            let successfulInvocation: Promise<ContractTransaction>;
+            it('should begin the successful invocation', async () => {
+                successfulInvocation = multiSend.multiSendFungibleTokenPush(
+                    rbdb.address,
+                    100,
+                    recipients,
+                );
+            });
+
+            it('should allow transfer after approval', async () => {
+                await expect(successfulInvocation).not.to.be.reverted;
+            });
+
+            it('should emit transfer events', async () => {
+                recipients.forEach(async (recipientAddress) => {
+                    // event Transfer(address indexed from, address indexed to, uint256 value);
+                    await expect(successfulInvocation).to.emit(
+                        rbdb,
+                        'Transfer'
+                    ).withArgs(
+                        deployer.address,
+                        recipientAddress,
+                        100,
+                    );
+                });
+            });
+
+            it('should change balances', async () => {
+                await expect(successfulInvocation).to.changeTokenBalances(
+                    rbdb,
+                    [deployer.address, ...recipients],
+                    [-400, 100, 100, 100, 100],
+                );
+            });
+
+            it('should complete the successful invocation', async () => {
+                await successfulInvocation;
+            });
+
+            it('should decrement allowance of deployer', async () => {
+                let deployerAllowance: BigNumber;
+                [deployerAllowance] =
+                    await rbdb.functions.allowance(deployer.address, multiSend.address);
+                expect(deployerAllowance).to.equal(deployerInitialBalance - 400n);
+            });
+
+            // NOTE the scenario of the recipient address rejecting an incoming ERC20 transfer
+            // does not exist, as this is not possible to do, hence no test for it.
+            // This scenario does exist for the native coin transfers though.
         });
     });
 
