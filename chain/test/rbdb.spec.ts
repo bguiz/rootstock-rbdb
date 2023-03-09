@@ -4,7 +4,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { RbdbFungibleToken__factory } from '../typechain-types/factories/contracts/RbdbFungibleToken__factory';
 import { RbdbFungibleToken } from '../typechain-types/contracts/RbdbFungibleToken';
 
-describe('MultiSend', () => {
+describe('Rbdb', () => {
     let deployer: SignerWithAddress;
     let rbdbFactory: RbdbFungibleToken__factory;
     let rbdb: RbdbFungibleToken;
